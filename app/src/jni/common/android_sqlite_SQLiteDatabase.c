@@ -39,9 +39,13 @@ int Java_ua_secure_sqlite_SQLiteDatabase_opendb(JNIEnv* env, jobject object, jst
     char const * fileNameStr = (*env)->GetStringUTFChars(env, fileName, 0);
 
     sqlite3 * handle = 0;
+    int ret = sqlite3_initialize();
+    if(SQLITE_OK != ret) {
+        LOGE("Database library initialization failed!!!");
+    }
     //LOGI("Open");
 	//LOGI(fileNameStr);
-    int err = sqlite3_open_v2(fileNameStr, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
+    int err = sqlite3_open_v2(fileNameStr, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
     if (SQLITE_OK != err) {
     	//(*env)->SetIntField(env, object, offset_sqliteHandle, (int) handle);
     	throw_sqlite3_exception(env, handle, err);

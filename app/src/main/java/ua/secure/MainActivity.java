@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.File;
+
 import ua.secure.sqlite.SQLiteCursor;
 import ua.secure.sqlite.SQLiteDatabase;
 
@@ -24,10 +26,15 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.sample_text);
 
         try {
-            SQLiteDatabase database = new SQLiteDatabase("secureDB");
-            database.execute("CREATE TABLE IF NOT EXIST DATA(id INTEGER PRIMARY KEY, name TEXT, value TEXT);");
-            database.execute("INSERT INTO DATA VALUES(1, fruit, mango);");
-            database.execute("INSERT INTO DATA VALUES(2, фрукт, яблуко);");
+            File dbFolder = new File(getFilesDir(), "databases");
+            if(!dbFolder.exists()) {
+                dbFolder.mkdirs();
+            }
+            File dbFile = new File(dbFolder, "secureDB.db");
+            SQLiteDatabase database = new SQLiteDatabase(dbFile.getAbsolutePath());
+            database.execute("CREATE TABLE IF NOT EXISTS DATA(id INTEGER PRIMARY KEY, name TEXT, value TEXT);");
+            database.execute("INSERT INTO DATA(id, name, value) VALUES(1, 'fruit', 'mango');");
+            database.execute("INSERT INTO DATA(id, name, value) VALUES(2, 'фрукт', 'яблуко');");
 
             SQLiteCursor cursor = database.query("SELECT * FROM DATA;");
             if(cursor != null && cursor.next()) {
@@ -37,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
             cursor.dispose();
             database.close();
         } catch (Exception ex) {
+            tv.setText(ex.toString());
             Log.e("SecureNative", "Error:" + ex.toString());
         }
 
