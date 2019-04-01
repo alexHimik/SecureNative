@@ -96,7 +96,8 @@ void Java_ua_secure_sqlite_SQLitePreparedStatement_bindString(JNIEnv* env, jobje
 
 	char const * valueStr = (*env)->GetStringUTFChars(env, value, 0);
 
-	int errcode = sqlite3_bind_text(handle, index, valueStr, -1, SQLITE_TRANSIENT);
+	char * encoded = encodeStringData(valueStr);
+	int errcode = sqlite3_bind_text(handle, index, encoded, -1, SQLITE_TRANSIENT);
     if (SQLITE_OK != errcode) {
     	throw_sqlite3_exception(env, sqlite3_db_handle(handle), errcode);
     }
@@ -107,7 +108,8 @@ void Java_ua_secure_sqlite_SQLitePreparedStatement_bindString(JNIEnv* env, jobje
 void Java_ua_secure_sqlite_SQLitePreparedStatement_bindInt(JNIEnv* env, jobject object, int statementHandle, int index, int value) {
 	sqlite3_stmt* handle = (sqlite3_stmt*)statementHandle;
 
-	int errcode = sqlite3_bind_int(handle, index, value);
+	int encoded = encodeIntData(value);
+	int errcode = sqlite3_bind_int(handle, index, encoded);
     if (SQLITE_OK != errcode) {
     	throw_sqlite3_exception(env, sqlite3_db_handle(handle), errcode);
     }
@@ -116,7 +118,8 @@ void Java_ua_secure_sqlite_SQLitePreparedStatement_bindInt(JNIEnv* env, jobject 
 void Java_ua_secure_sqlite_SQLitePreparedStatement_bindDouble(JNIEnv* env, jobject object, int statementHandle, int index, double value) {
 	sqlite3_stmt* handle = (sqlite3_stmt*)statementHandle;
 
-	int errcode = sqlite3_bind_double(handle, index, value);
+	double encoded = encodeDoubleData(value);
+	int errcode = sqlite3_bind_double(handle, index, encoded);
     if (SQLITE_OK != errcode) {
     	throw_sqlite3_exception(env, sqlite3_db_handle(handle), errcode);
     }
@@ -129,5 +132,20 @@ void Java_ua_secure_sqlite_SQLitePreparedStatement_bindNull(JNIEnv* env, jobject
     if (SQLITE_OK != errcode) {
     	throw_sqlite3_exception(env, sqlite3_db_handle(handle), errcode);
     }
+}
+
+int encodeIntData(int value) {
+
+    return value;
+}
+
+double encodeDoubleData(double value) {
+
+    return value;
+}
+
+char * encodeStringData(char * value) {
+
+    return value;
 }
 
